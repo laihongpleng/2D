@@ -2,14 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // For TextMeshPro
 
 public class GameController : MonoBehaviour
 {
     [Header("UI Elements")]
     public Image playerImage;
     public Image computerImage;
-    public Text resultText;
-    public Text scoreText;
+    public TMP_Text resultText;
+
+    [Header("Score Texts")]
+    public TMP_Text playerScoreText;
+    public TMP_Text computerScoreText;
 
     [Header("Sprites")]
     public Sprite rockSprite;
@@ -23,7 +27,16 @@ public class GameController : MonoBehaviour
 
     public void OnButtonClick(GameObject buttonObject)
     {
-        // Extract player choice from button name
+        // Safety check
+        if(playerImage == null || computerImage == null || resultText == null ||
+           playerScoreText == null || computerScoreText == null ||
+           rockSprite == null || paperSprite == null || scissorsSprite == null)
+        {
+            Debug.LogError("Assign all UI elements and sprites in the Inspector!");
+            return;
+        }
+
+        // Extract player choice from button name (e.g., "1_Rock")
         Choice playerChoice = (Choice)int.Parse(buttonObject.name.Split('_')[0]);
 
         // Update player image
@@ -36,11 +49,15 @@ public class GameController : MonoBehaviour
         // Check result
         string result = GetResult(playerChoice, computerChoice);
 
-        // Update result and score text
+        // Update result text
         resultText.text = result;
-        scoreText.text = $"Player: {playerScore}  |  Computer: {computerScore}";
+
+        // Update scores as numbers only
+        playerScoreText.text = playerScore.ToString();
+        computerScoreText.text = computerScore.ToString();
     }
 
+    // Return the corresponding sprite for each choice
     Sprite GetSprite(Choice choice)
     {
         switch (choice)
@@ -52,6 +69,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // Determine the game result and update scores
     string GetResult(Choice player, Choice computer)
     {
         if (player == computer) return "Draw!";
@@ -69,4 +87,5 @@ public class GameController : MonoBehaviour
             return "You Lose!";
         }
     }
+    
 }
